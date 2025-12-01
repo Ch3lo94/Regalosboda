@@ -14,25 +14,21 @@
     /* ===== GRID ===== */
     .grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr); /* Desktop grande */
+      grid-template-columns: repeat(5, 1fr); /* desktop */
       gap: 20px;
     }
 
-    /* Laptops y tablets horizontales */
+    /* Tablets */
     @media (max-width: 1024px) {
       .grid {
         grid-template-columns: repeat(4, 1fr);
       }
     }
 
-    /* CELULAR — 3 por fila, tarjetas más grandes */
-    @media (max-width: 768px) {
+    /* Celulares — 3 por fila */
+    @media (max-width: 600px) {
       .grid {
         grid-template-columns: repeat(3, 1fr);
-      }
-
-      .item img {
-        height: 140px; /* más grande en celular */
       }
     }
 
@@ -55,38 +51,26 @@
       margin-bottom: 10px;
     }
 
-    /* ===== Banner YA FUE ELEGIDO ===== */
-
-    /* Celular (tamaño normal) */
+    /* ===== BANNER YA FUE ELEGIDO ===== */
     .agotado-banner {
       background: #d4af37;
       color: black;
       text-align: center;
-      padding: 12px 0;
+      padding: 14px 0;        /* aumenta altura */
       font-weight: bold;
-      font-size: 16px;
+      font-size: 18px;        /* texto más grande */
       border-radius: 6px;
       margin-top: 10px;
-    }
-
-    /* PC — Banner más grande */
-    @media (min-width: 1024px) {
-      .agotado-banner {
-        font-size: 22px;
-        padding: 16px 0;
-      }
     }
   </style>
 </head>
 
 <body>
-
-  <h1>Elegé uno o más regalos</h1>
-
+  <h1>Lista de Regalos</h1>
   <div class="grid" id="lista"></div>
 
   <script>
-    // === Ejemplo: reemplazar luego con fetch real a tu JSON ===
+    // Simulación del fetch, reemplazar por tu URL real
     const data = [
       {
         id: 1,
