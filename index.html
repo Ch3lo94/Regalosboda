@@ -58,8 +58,6 @@ p  { font-size:16px; line-height:1.4; }
   border:3px solid transparent;
   transition:.25s ease;
   box-shadow:0 4px 12px rgba(0,0,0,0.1);
-  display:flex;
-  flex-direction:column;
 }
 
 .card:hover {
@@ -68,7 +66,7 @@ p  { font-size:16px; line-height:1.4; }
 }
 
 .selected {
-  border:3px solid #d4af37 !important; /* borde dorado */
+  border:3px solid #d4af37 !important;
   box-shadow:0 6px 18px rgba(212,175,55,0.6) !important;
   transform: scale(1.02);
 }
@@ -79,41 +77,28 @@ p  { font-size:16px; line-height:1.4; }
   object-fit:cover;
 }
 
-.card-content { 
-  padding:16px; 
-  flex-grow:1;
+.card-content {
+  padding:16px;
 }
 
-/* Banner inferior para regalo agotado */
 .agotado {
-  opacity:0.5;
+  opacity:0.4;
   pointer-events:none;
 }
-.agotado .agotado-banner {
-  background:#d4af37; /* dorado */
-  color:black;
-  text-align:center;
-  padding:8px 0;
-  font-weight:bold;
-  font-size:14px;
-}
 
-/* Botón confirmar dorado */
+/* Botón confirmar */
 #confirm-btn {
   display:block;
   margin:25px auto;
   padding:12px 30px;
-  background:#d4af37;
+  background:#0077ff;
   color:white;
   border:none;
   border-radius:12px;
   font-size:18px;
   cursor:pointer;
-  transition:.25s ease;
 }
-#confirm-btn:hover:not(:disabled) {
-  background:#c49e2a;
-}
+
 #confirm-btn:disabled {
   background:#aaa;
   cursor:not-allowed;
@@ -154,9 +139,7 @@ p  { font-size:16px; line-height:1.4; }
   h1 { font-size:20px; }
   h2 { font-size:18px; }
   p  { font-size:13px; }
-  .grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  }
+  .grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
   .card img { height:120px; }
   .card-content { padding:8px; }
   #confirm-btn { padding:10px 20px; font-size:16px; }
@@ -166,53 +149,56 @@ p  { font-size:16px; line-height:1.4; }
 
 <body>
 
-<!-- Pantalla de bienvenida / login Google -->
+<!-- Pantalla bienvenida -->
 <div id="welcome" class="center">
   <img class="welcome-img" src="https://raw.githubusercontent.com/Ch3lo94/Regalos_Boda/main/images/IMG-20251127-WA0008.jpg">
   <h2>Nos ayudarías mucho con estas cosas que nos faltan ❤️</h2>
   <p>Ingresá con tu cuenta de Google y seleccioná lo que desees regalarnos.</p>
 
   <div id="google-btn-wrapper">
-      <div id="g_id_onload"
-        data-client_id="342769047778-jc52eh3n59a3vjocagmomi8pln5kbqv3.apps.googleusercontent.com"
-        data-callback="handleCredentialResponse">
-      </div>
+    <div id="g_id_onload"
+         data-client_id="342769047778-jc52eh3n59a3vjocagmomi8pln5kbqv3.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse">
+    </div>
 
-      <div class="g_id_signin"
-        data-type="standard"
-        data-size="large"
-        data-theme="filled_blue">
-      </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="filled_blue">
+    </div>
   </div>
 </div>
 
-<!-- Catálogo de regalos -->
+<!-- Catálogo -->
 <div id="catalogo" class="hidden">
   <h1 class="center">Elegí uno o más regalo</h1>
+
   <div class="grid-wrapper">
     <div id="grid" class="grid"></div>
   </div>
+
   <button id="confirm-btn" disabled>Confirmar selección</button>
 </div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbyISWbCW9HkNFs_4tqYFjNrQW6GLU9F-MwytJq1f_ilyB0Y5lF3H7znpV_0CRCWiLSS/exec";
-
 let usuario = null;
 let seleccion = [];
 
-// Mostrar mensaje final
+// Mensaje final
 function mostrarMensajeFinal() {
   document.body.innerHTML = `
     <div class="center">
       <h1>¡Gracias por tu regalo! 🎁</h1>
       <p>Tu respuesta ya quedó registrada ❤️</p>
-    </div>`;
+    </div>
+  `;
 }
 
 // Login Google
 async function handleCredentialResponse(response) {
   const payload = JSON.parse(atob(response.credential.split('.')[1]));
+
   usuario = {
     nombre: payload.given_name,
     apellido: payload.family_name,
@@ -243,11 +229,13 @@ async function cargarCatalogo() {
   const res = await fetch(API);
   const items = await res.json();
   const grid = document.getElementById("grid");
+
   grid.innerHTML = "";
 
   items.forEach(item => {
     const card = document.createElement("div");
     card.className = "card";
+
     if (item.stockRestante <= 0) card.classList.add("agotado");
 
     card.innerHTML = `
@@ -256,7 +244,6 @@ async function cargarCatalogo() {
         <h3>${item.nombre}</h3>
         <p>${item.descripcion || ''}</p>
       </div>
-      ${item.stockRestante <= 0 ? '<div class="agotado-banner">Ya fue elegido</div>' : ''}
     `;
 
     card.onclick = () => toggle(item.id, card);
@@ -273,10 +260,11 @@ function toggle(id, card) {
     seleccion.push(id);
     card.classList.add("selected");
   }
+
   document.getElementById("confirm-btn").disabled = seleccion.length === 0;
 }
 
-// Confirmar selección
+// Enviar selección
 document.getElementById("confirm-btn").onclick = async () => {
   const resp = await fetch(API, {
     method: "POST",
